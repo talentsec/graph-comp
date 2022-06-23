@@ -1,7 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
-import data from '../mock/test.json'
+import _nodes from '../mock/data-nodes.json'
+import _links from '../mock/data-links.json'
 import './ForceDirectedGraph.css'
 import { VizSimulation } from '../utils/createGraph'
+import { combineLinks, combineNodes, nodesTier } from '../utils/combine'
+
+const nodes = combineNodes(_nodes);
+const links = combineLinks(_links as any, nodes);
+
+console.log('nodes', nodes, links);
+// const tier = nodesTier(nodes, links);
+// console.log('tier', tier);
 
 interface IPorps {
   type: 'tree' | 'graph'
@@ -16,7 +25,7 @@ const ForceDirectedGraph = () => {
   const simulation = useRef<VizSimulation | null>(null)
 
   const switchVizType = () => {
-    if(vizType === 'graph') {
+    if (vizType === 'graph') {
       setVizType('tree')
     } else {
       setVizType('graph')
@@ -24,10 +33,10 @@ const ForceDirectedGraph = () => {
   }
 
   useEffect(() => {
-    if(!simulation.current) {
-      simulation.current = new VizSimulation(data, vizType)
+    if (!simulation.current) {
+      simulation.current = new VizSimulation({ nodes, links }, vizType)
     }
-    if(simulation.current.status === 'created') {
+    if (simulation.current.status === 'created') {
       simulation.current.restart(vizType)
     } else {
       simulation.current.create()
