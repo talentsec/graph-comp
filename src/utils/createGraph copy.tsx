@@ -13,24 +13,9 @@ const styleList = [
   { fill: '#a5abb6', outline: '#a4aab4', text: '#ffffff' },
 ]
 
-type NodeType = {
-  id: string
-  labels: string
-  level: number
-  properties: any
-}
-
-type LinkType = {
-  id: string
-  source: string
-  target: string
-  type: any
-  properties: any
-}
-
 export class VizSimulation {
   vizType: any
-  data: { nodes: NodeType[], links: LinkType[] }
+  data: any
   simulation: Simulation<SimulationNodeDatum, undefined> | null
   status: string
   constructor(data: any, vizType: any) {
@@ -53,10 +38,10 @@ export class VizSimulation {
     const width = parseFloat(d3.select('#graph').style('width'))
     const height = parseFloat(d3.select('#graph').style('height'))
   
-    // const root = d3.hierarchy(this.data)
-    // const links = root.links()
-    // const nodes = root.descendants()
-    const { nodes, links } = this.data
+    const root = d3.hierarchy(this.data)
+    const links = root.links()
+    const nodes = root.descendants()
+    // const { nodes, links } = this.data
 
     const zoom = d3.zoom().scaleExtent([0, 8])
       .on('zoom', (event) => {
@@ -115,8 +100,6 @@ export class VizSimulation {
       .attr('marker-end', d => "url(#arrow)")
       .attr('stroke-width', .7)
       .attr('stroke', "#32323233")
-    
-    console.log('111111111,', links)
 
       const gElement = svg.attr('class', 'nodes')
         .selectAll('circle')
@@ -128,11 +111,11 @@ export class VizSimulation {
       const ringElement = gElement.append('circle')
         .attr('class', 'outline')
         .attr('r', d => 11)
-        .attr('fill', d => styleList[d.level].outline)
+        .attr('fill', d => styleList[d.height].outline)
 
       const nodeElement = gElement.append('circle')
         .attr('r', d => 10)
-        .attr('fill', d => styleList[d.level].fill)
+        .attr('fill', d => styleList[d.height].fill)
 
       const textElement  = gElement.append('text')
         .attr('fill', '#000')
@@ -140,30 +123,30 @@ export class VizSimulation {
         .attr('opacity', .4)
         .attr('text-anchor', `middle`)
         .attr('dominant-baseline', 'middle')
-        .text(d => d.id)
+        .text(d => d.depth)
 
   
     this.simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
       if(this.vizType === 'tree') {
-        ringElement.attr('cx', (d: any) => d.x).attr('cy', d => 120 * d.level + 40)
-        textElement.attr('dx', (d: any) => d.x).attr('dy', d => 120 * d.level + 40)
+        ringElement.attr('cx', (d: any) => d.x).attr('cy', d => 120 * d.depth + 40)
+        textElement.attr('dx', (d: any) => d.x).attr('dy', d => 120 * d.depth + 40)
 
         nodeElement
         .attr('cx', (d: any) => {
           return d.x
         })
         .attr('cy', d => {
-          return 120 * d.level + 40
+          return 120 * d.depth + 40
         })
 
         linkElement
           .attr('x1', (d: any) => d.source.x)
           .attr('x2', (d: any) => d.target.x)
           .attr('y1', (d: any) => {
-            return 120 * d.source.level + 40
+            return 120 * d.source.depth + 40
           })
-          .attr('y2', (d: any) => {
-            return 120 * d.target.level + 40
+          .attr('y2', d => {
+            return 120 * d.target.depth + 40
           })
       } else {
         ringElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
@@ -174,9 +157,7 @@ export class VizSimulation {
         .attr('cy', (d: any) => d.y)
     
         linkElement
-          .attr('x1', (d: any) => {
-            return d.source.x
-          })
+          .attr('x1', (d: any) => d.source.x)
           .attr('y1', (d: any) => d.source.y)
           .attr('x2', (d: any) => d.target.x)
           .attr('y2', (d: any) => d.target.y)
