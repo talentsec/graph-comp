@@ -3,15 +3,19 @@ import React, { useEffect, useRef, useState } from 'react'
 // import nodes from '../mock/nodes.json'
 // import links from '../mock/links.json'
 
-// import nodeData from '../mock/data_nodes.json'
-// import linkData from '../mock/data_links.json'
+import _nodes from '../mock/data_nodes.json'
+import _links from '../mock/data_links.json'
 
-import nodes from '../mock/all_node.json'
-import links from '../mock/all_link.json'
+// import nodes from '../mock/all_node.json'
+// import links from '../mock/all_link.json'
 
 import './ForceDirectedGraph.css'
 import { VizSimulation } from '../utils/createGraph'
 import { handleLinks, handleNodes } from '../utils/dataHandler'
+import { combineLinks, combineNodes } from '../utils/combine'
+
+const nodes = combineNodes(_nodes);
+const links = combineLinks(_links as any, nodes);
 
 interface IPorps {
   type: 'tree' | 'graph'
@@ -32,9 +36,6 @@ const ForceDirectedGraph = () => {
       setVizType('graph')
     }
   }
-
-  // const nodes = handleNodes(nodeData)
-  // const links = handleLinks(linkData, nodes)
 
   useEffect(() => {
     // const nodes = handleNodes(nodeData)
