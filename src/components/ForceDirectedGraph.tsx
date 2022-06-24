@@ -1,51 +1,35 @@
-import React, { useEffect, useRef, useState } from 'react'
-import _nodes from '../mock/data_nodes.json'
-import _links from '../mock/data_links.json'
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useRef } from 'react'
+import { Visualization } from '../utils/visualization'
+import styles from './ForceDirectedGraph.module.css'
 
-import './ForceDirectedGraph.css'
-import { VizSimulation } from '../utils/createGraph'
-import { handleLinks, handleNodes } from '../utils/dataHandler'
-import { combineLinks, combineNodes } from '../utils/combine'
-
-const nodes = combineNodes(_nodes);
-const links = combineLinks(_links as any, nodes);
-
-interface IPorps {
-  type: 'tree' | 'graph'
+interface IProps {
+  data: GraphData
+  vizType: VizType
 }
 
-type VizType = 'graph' | 'tree'
+export type GraphData = {
+  nodes: any[]
+  links: any[]
+}
 
-const ForceDirectedGraph = () => {
+export type VizType = 'tree' | 'graph'
 
-  const [vizType, setVizType] = useState<VizType>('tree')
-
-  const simulation = useRef<VizSimulation | null>(null)
-
-  const switchVizType = () => {
-    if(vizType === 'graph') {
-      setVizType('tree')
-    } else {
-      setVizType('graph')
-    }
-  }
+const ForceDirectedGraph: React.FC<IProps> = ({ data, vizType }) => {
+  const simulation = useRef<Visualization | null>(null)
 
   useEffect(() => {
-    if(!simulation.current) {
-      simulation.current = new VizSimulation({ nodes, links }, vizType)
+    if (!simulation.current) {
+      simulation.current = new Visualization(data, vizType)
     }
-    if(simulation.current.status === 'created') {
+    if (simulation.current.status === 'created') {
       simulation.current.restart(vizType)
     } else {
       simulation.current.create()
     }
   }, [vizType])
 
-  return (
-    <div id='graph'>
-      <button id='btn' onClick={() => { switchVizType() }}>switch</button>
-    </div>
-  )
+  return <div className={styles.graph} id='graph' />
 }
 
 export default ForceDirectedGraph

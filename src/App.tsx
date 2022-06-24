@@ -1,13 +1,14 @@
 import React from 'react'
-import ForceDirectedGraph from './components/ForceDirectedGraph'
-import './App.css'
 
-function App() {
-  return (
-    <div className="App" id='app'>
-      <ForceDirectedGraph />
-    </div>
-  )
+import nodes from './mock/data_nodes.json'
+import links from './mock/data_links.json'
+
+import DataVisualization from './components/DataVisualization'
+
+const data = { nodes, links }
+
+const App = () => {
+  return <DataVisualization data={ data }/>
 }
 
-export default App;
+export default App

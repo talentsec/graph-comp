@@ -1,0 +1,16 @@
+.data_viz {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.graph_con {
+  width: 75%;
+  height: 100%;
+}
+
+.panel_con {
+  width: 25%;
+  height: 100%;
+}
