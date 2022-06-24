@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-// import data from '../mock/test.json'
-// import nodes from '../mock/nodes.json'
-// import links from '../mock/links.json'
-
 import _nodes from '../mock/data_nodes.json'
 import _links from '../mock/data_links.json'
-
-// import nodes from '../mock/all_node.json'
-// import links from '../mock/all_link.json'
 
 import './ForceDirectedGraph.css'
 import { VizSimulation } from '../utils/createGraph'
@@ -38,13 +31,6 @@ const ForceDirectedGraph = () => {
   }
 
   useEffect(() => {
-    // const nodes = handleNodes(nodeData)
-    // const links = handleLinks(linkData, nodes)
-
-    console.log('nodes llll', nodes)
-    console.log('links 111', links)
-
-
     if(!simulation.current) {
       simulation.current = new VizSimulation({ nodes, links }, vizType)
     }

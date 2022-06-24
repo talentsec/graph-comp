@@ -45,7 +45,7 @@ export class VizSimulation {
 
     const zoom = d3.zoom().scaleExtent([0, 8])
       .on('zoom', (event) => {
-        const g = d3.selectAll('g')
+        const g = d3.selectAll('.group')
         g.attr('transform', event.transform)
       }) as any
 
@@ -65,11 +65,11 @@ export class VizSimulation {
       .force('center', d3.forceCenter(width / 2, height / 2))
 
     const drag = d3.drag().on('start', (event, node: any) => {
-      if (!event.active) this.simulation?.alphaTarget(0.7).restart()
+      if (!event.active) this.simulation?.alphaTarget(0.3).restart()
       node.fx = node.x
       node.fy = node.y
     }).on('drag', (event, node: any) => {
-      if (!event.active) this.simulation?.alphaTarget(0.7).restart()
+      if (!event.active) this.simulation?.alphaTarget(0.3).restart()
       node.fx = event.x
       node.fy = event.y
     }).on('end', (event, node: any) => {
@@ -93,7 +93,7 @@ export class VizSimulation {
       .attr("fill", "#9d9d9d")
 
     const linkElement = svg.append('g')
-      .attr('class', 'links')
+      .attr('class', 'group links')
       .selectAll('line')
       .data(links)
       .enter().append('line')
@@ -101,11 +101,14 @@ export class VizSimulation {
       .attr('stroke-width', .8)
       .attr('stroke', "#32323233")
 
-    const gElement = svg.attr('class', 'nodes')
+    const gElement = svg
+      .append('g')
+      .attr('class', 'group nodes')
       .selectAll('circle')
       .data(nodes)
       .enter()
       .append('g')
+      .attr('class', 'node')
       .call(drag)
 
     const ringElement = gElement.append('circle')
@@ -162,7 +165,6 @@ export class VizSimulation {
           .attr('x1', (d: any) => d.source.x)
           .attr('x2', (d: any) => d.target.x)
           .attr('y1', (d: any) => {
-            // return 120 * d.source.depth + 40
             let h = styleList.findIndex(s => s.label === d.source.label)
             return h === -1 ? styleList.length * 120 + 160 : 120 * h + 40
           })
