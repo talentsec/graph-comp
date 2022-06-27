@@ -27,7 +27,7 @@ export class Visualization {
     const { links, nodes } = this.data
     const zoom = d3
       .zoom()
-      .scaleExtent([0, 8])
+      .scaleExtent([0.3, 8])
       .on('zoom', (event) => {
         const group = d3.selectAll('.group')
         group.attr('transform', event.transform)
@@ -36,7 +36,7 @@ export class Visualization {
     const linkForce = d3
       .forceLink()
       .id((d: any) => d.id)
-      .strength(0.4)
+      .strength(0.1)
 
     const svg = d3
       .select('#graph')
@@ -80,27 +80,75 @@ export class Visualization {
       .append('svg:marker')
       .attr('id', 'arrow')
       .attr('viewBox', '0 -5 10 10')
-      .attr('refX', 27)
+      .attr('refX', 32)
       .attr('refY', 0)
       .attr('markerWidth', 8)
       .attr('markerHeight', 8)
       .attr('orient', 'auto')
       .append('svg:path')
-      .attr('d', 'M0,-5 L10,0 L0,5')
+      .attr('d', 'M0,-3 L7,0 L0,3')
       .attr('fill', '#9d9d9d')
 
-    const linkElement = svg
+    const linkGroup = svg
       .append('g')
       .attr('class', 'group links')
       .selectAll('line')
       .data(links)
       .enter()
+      .append('g')
+      .attr('class', 'link')
+
+    const linkElement = linkGroup
       .append('line')
       .attr('marker-end', 'url(#arrow)')
       .attr('stroke-width', 0.8)
-      .attr('stroke', '#32323233')
+      .attr('stroke', '#a5abb6')
+    
+    
+    // const linkElement = svg
+    //   .append('g')
+    //   .attr('class', 'group links')
+    //   .selectAll('line')
+    //   .data(links)
+    //   .enter()
+    //   .append('line')
+    //   .attr('marker-end', 'url(#arrow)')
+    //   .attr('stroke-width', 0.8)
+    //   .attr('stroke', '#32323233')
 
-    const gElement = svg
+    // const lineTextElement = svg
+    // .append('g')
+    // .attr('class', 'group link-text')
+    // .data(links)
+    // .enter()
+    //   .append('text')
+    //   .append('textPath')
+    //   .attr('href', (d: any) => {
+    //     // console.log(2333, d)
+    //     return `#${d.id}`
+    //   })
+    //   .attr('startOffset', '50%')
+    //   .append('tspan')
+    //   .attr('style', 'text-anchor: middle; font: 24px sans-serif; user-select: none')
+    //   .attr('fill', '#333')
+    //   .text((d: any) => d.type)
+    
+    // const linkTextElement = svg
+    //   .append('text')
+    //   .attr('fill', (d: any) => {
+    //     let h = styleList.findIndex((s) => s.label === d.label)
+    //     if (h === -1) h = styleList.length - 1
+    //     return styleList[h].text
+    //   })
+    //   .attr('font-size', '.4em')
+    //   .attr('opacity', 0.4)
+    //   .attr('text-anchor', `middle`)
+    //   .attr('dominant-baseline', 'middle')
+    //   .text((d: any) => {
+    //     return d.label
+    //   })
+
+    const nodeGroup = svg
       .append('g')
       .attr('class', 'group nodes')
       .selectAll('circle')
@@ -110,37 +158,39 @@ export class Visualization {
       .attr('class', 'node')
       .call(drag)
 
-    const ringElement = gElement
+    const ringElement = nodeGroup
       .append('circle')
       .attr('class', 'outline')
-      .attr('r', 13)
+      .attr('r', 17)
       .attr('fill', (d: any) => {
         let h = styleList.findIndex((s) => s.label === d.label)
         if (h === -1) h = styleList.length - 1
         return styleList[h].outline
       })
 
-    const nodeElement = gElement
+    const nodeElement = nodeGroup
       .append('circle')
-      .attr('r', 12)
+      .attr('r', 16)
       .attr('fill', (d: any) => {
         let h = styleList.findIndex((s) => s.label === d.label)
         if (h === -1) h = styleList.length - 1
         return styleList[h].fill
       })
 
-    const textElement = gElement
+    const textElement = nodeGroup
       .append('text')
       .attr('fill', (d: any) => {
         let h = styleList.findIndex((s) => s.label === d.label)
         if (h === -1) h = styleList.length - 1
         return styleList[h].text
       })
-      .attr('font-size', '.4em')
-      .attr('opacity', 0.4)
+      .attr('font-size', '.3em')
+      .attr('opacity', 0.5)
       .attr('text-anchor', `middle`)
       .attr('dominant-baseline', 'middle')
-      .text((d: any) => d.label)
+      .text((d: any) => {
+        return d.label
+      })
 
     this.simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
       if (this.vizType === 'tree') {
@@ -179,6 +229,8 @@ export class Visualization {
           })
       } else {
         ringElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
+        // lineTextElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
+
         textElement.attr('dx', (d: any) => d.x).attr('dy', (d: any) => d.y)
 
         nodeElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)

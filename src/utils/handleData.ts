@@ -45,6 +45,16 @@ type LinkCount = {
 }
 
 /**
+ * 
+ * @param nodes handleNodes处理后的nodes数据
+ */
+export const getNodeLabels = (nodes: any[]) => {
+  // const labels: string[] = []
+  const labels = Array.from(new Set(nodes.map(item => item.label)))
+  return labels
+}
+
+/**
  *
  * @param nodes handleNodes处理后的nodes数据
  */
