@@ -13,8 +13,9 @@ const DataVisualization: React.FC<IProps> = ({ data }) => {
   const nodes = handleNodes(data.nodes)
   const links = handleLinks(data.links, nodes)
   const [vizType, setVizType] = useState<VizType>('tree')
+  const [linkTextShow, setLinkTextShow] = useState<boolean>(true)
 
-  const switchThis = () => {
+  const switchThisType = () => {
     if (vizType === 'tree') {
       setVizType('graph')
     } else {
@@ -22,16 +23,23 @@ const DataVisualization: React.FC<IProps> = ({ data }) => {
     }
   }
 
+  const switchThisTextShow = () => {
+    setLinkTextShow(!linkTextShow)
+  }
+
   return (
     <div className={styles.data_viz}>
       <div className={styles.graph_con}>
-        <ForceDirectedGraph data={{ nodes, links }} vizType={vizType} />
+        <ForceDirectedGraph data={{ nodes, links }} vizType={vizType} linkTextShow={linkTextShow}/>
       </div>
       <div className={styles.panel_con}>
         <ControlPanel
           data={{ nodes, links }}
           switchType={() => {
-            switchThis()
+            switchThisType()
+          }}
+          switchTextShow={() => {
+            switchThisTextShow()
           }}
         />
       </div>

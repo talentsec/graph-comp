@@ -28,5 +28,9 @@ export const colorCategories = [
   { fill: '#57c7e3', outline: '#35b9da', text: '#2a2c34' },
   { fill: '#d9c8ae', outline: '#c3a77e', text: '#2a2c34' },
   { fill: '#569480', outline: '#497a6b', text: '#ffffff' },
-  { fill: '#a5abb6', outline: '#a4aab4', text: '#ffffff' }
+  { fill: '#a5abb6', outline: '#a4aab4', text: '#ffffff' },
+  { fill: '#f16667', outline: '#eb2728', text: '#ffffff' },
+  { fill: '#e7298a', outline: '#f0027f', text: '#ffffff' },
+  { fill: '#7fc97f', outline: '#1b9e77', text: '#ffffff' },
+  { fill: '#ffff33', outline: '#fff2ae', text: '#2a2c34' },
 ]

@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import * as d3 from 'd3'
 import { ForceLink, Simulation, SimulationNodeDatum } from 'd3'
-import { styleList } from './constant'
+import { getColor } from './color'
+import { ColorCategory, orderedLabel, styleList } from './constant'
 
 type GraphData = {
   nodes: any[]
@@ -10,13 +11,15 @@ type GraphData = {
 
 export class Visualization {
   private vizType: string
+  private linkTextShow: boolean
   private data: GraphData
   private simulation: Simulation<SimulationNodeDatum, undefined> | null
   public status: 'init' | 'created'
 
-  constructor(data: GraphData, vizType: string) {
+  constructor(data: GraphData, vizType: string, linkTextShow: boolean) {
     this.data = data
     this.vizType = vizType
+    this.linkTextShow = linkTextShow
     this.simulation = null
     this.status = 'init'
   }
@@ -99,54 +102,25 @@ export class Visualization {
       .attr('class', 'link')
 
     const linkElement = linkGroup
-      .append('line')
-      .attr('marker-end', 'url(#arrow)')
-      .attr('stroke-width', 0.8)
-      .attr('stroke', '#a5abb6')
+    .append('path')
+    .attr('id', (d: any) => `link_id_${d.id}`)
+    .attr('marker-end', 'url(#arrow)')
+    .attr('stroke-width', 0.8)
+    .attr('stroke', '#a5abb6')
     
-    
-    // const linkElement = svg
-    //   .append('g')
-    //   .attr('class', 'group links')
-    //   .selectAll('line')
-    //   .data(links)
-    //   .enter()
-    //   .append('line')
-    //   .attr('marker-end', 'url(#arrow)')
-    //   .attr('stroke-width', 0.8)
-    //   .attr('stroke', '#32323233')
-
-    // const lineTextElement = svg
-    // .append('g')
-    // .attr('class', 'group link-text')
-    // .data(links)
-    // .enter()
-    //   .append('text')
-    //   .append('textPath')
-    //   .attr('href', (d: any) => {
-    //     // console.log(2333, d)
-    //     return `#${d.id}`
-    //   })
-    //   .attr('startOffset', '50%')
-    //   .append('tspan')
-    //   .attr('style', 'text-anchor: middle; font: 24px sans-serif; user-select: none')
-    //   .attr('fill', '#333')
-    //   .text((d: any) => d.type)
-    
-    // const linkTextElement = svg
-    //   .append('text')
-    //   .attr('fill', (d: any) => {
-    //     let h = styleList.findIndex((s) => s.label === d.label)
-    //     if (h === -1) h = styleList.length - 1
-    //     return styleList[h].text
-    //   })
-    //   .attr('font-size', '.4em')
-    //   .attr('opacity', 0.4)
-    //   .attr('text-anchor', `middle`)
-    //   .attr('dominant-baseline', 'middle')
-    //   .text((d: any) => {
-    //     return d.label
-    //   })
+    if(this.linkTextShow) {
+      linkGroup
+      .append('text')
+      .attr('dy', '-2.5')
+      .attr('text-anchor', 'middle')
+      .append('textPath')
+      .attr('xlink:href', (d: any) => `#link_id_${d.id}`)
+      .attr('startOffset', '50%')
+      .attr('class', 'link-label')
+      .attr('fill', '#a5abb6')
+      .style('font', 'normal .5em Arial')
+      .text((d: any) => d.type)
+    }
 
     const nodeGroup = svg
       .append('g')
@@ -158,31 +132,31 @@ export class Visualization {
       .attr('class', 'node')
       .call(drag)
 
+
+    const genColor = getColor(orderedLabel)
+    
     const ringElement = nodeGroup
       .append('circle')
       .attr('class', 'outline')
       .attr('r', 17)
       .attr('fill', (d: any) => {
-        let h = styleList.findIndex((s) => s.label === d.label)
-        if (h === -1) h = styleList.length - 1
-        return styleList[h].outline
+        const colorCate = genColor(d.label) as ColorCategory
+        return colorCate.outline
       })
 
     const nodeElement = nodeGroup
       .append('circle')
       .attr('r', 16)
       .attr('fill', (d: any) => {
-        let h = styleList.findIndex((s) => s.label === d.label)
-        if (h === -1) h = styleList.length - 1
-        return styleList[h].fill
+        const colorCate = genColor(d.label) as ColorCategory
+        return colorCate.fill
       })
 
     const textElement = nodeGroup
       .append('text')
       .attr('fill', (d: any) => {
-        let h = styleList.findIndex((s) => s.label === d.label)
-        if (h === -1) h = styleList.length - 1
-        return styleList[h].text
+        const colorCate = genColor(d.label) as ColorCategory
+        return colorCate.text
       })
       .attr('font-size', '.3em')
       .attr('opacity', 0.5)
@@ -193,18 +167,21 @@ export class Visualization {
       })
 
     this.simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
+      const getH = (l: string) => {
+        const h = styleList.findIndex((s) => s.label === l)
+        return h === -1 ? styleList.length * 100 + 160 : 100 * h + 40
+      }
+
       if (this.vizType === 'tree') {
         ringElement
           .attr('cx', (d: any) => d.x)
           .attr('cy', (d: any) => {
-            const h = styleList.findIndex((s) => s.label === d.label)
-            return h === -1 ? styleList.length * 120 + 160 : 120 * h + 40
+            return getH(d.label)
           })
         textElement
           .attr('dx', (d: any) => d.x)
           .attr('dy', (d: any) => {
-            const h = styleList.findIndex((s) => s.label === d.label)
-            return h === -1 ? styleList.length * 120 + 160 : 120 * h + 40
+            return getH(d.label)
           })
 
         nodeElement
@@ -212,34 +189,27 @@ export class Visualization {
             return d.x
           })
           .attr('cy', (d: any) => {
-            const h = styleList.findIndex((s) => s.label === d.label)
-            return h === -1 ? styleList.length * 120 + 160 : 120 * h + 40
+            return getH(d.label)
           })
 
-        linkElement
-          .attr('x1', (d: any) => d.source.x)
-          .attr('x2', (d: any) => d.target.x)
-          .attr('y1', (d: any) => {
-            const h = styleList.findIndex((s) => s.label === d.source.label)
-            return h === -1 ? styleList.length * 120 + 160 : 120 * h + 40
-          })
-          .attr('y2', (d: any) => {
-            const h = styleList.findIndex((s) => s.label === d.target.label)
-            return h === -1 ? styleList.length * 120 + 160 : 120 * h + 40
-          })
+        linkElement.attr(
+          "d",
+          (d: any) => {
+            let x1 = d.source.x
+            let x2 = d.target.x
+            let y1 = getH(d.source.label)
+            let y2 = getH(d.target.label)
+            return `M ${x1} ${y1} L ${x2} ${y2}`
+          }
+        )
       } else {
         ringElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
-        // lineTextElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
-
         textElement.attr('dx', (d: any) => d.x).attr('dy', (d: any) => d.y)
-
         nodeElement.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
-
-        linkElement
-          .attr('x1', (d: any) => d.source.x)
-          .attr('y1', (d: any) => d.source.y)
-          .attr('x2', (d: any) => d.target.x)
-          .attr('y2', (d: any) => d.target.y)
+        linkElement.attr(
+          "d",
+          d => `M ${d.source.x} ${d.source.y} L ${d.target.x} ${d.target.y}`
+        )
       }
     })
 
@@ -250,8 +220,26 @@ export class Visualization {
     this.status = 'created'
   }
 
-  restart(vizType: string) {
+  restart(vizType: string, linkTextShow: boolean) {
     this.vizType = vizType
+    this.linkTextShow = linkTextShow
+    const linkGroup = d3.selectAll('.link')
+
+    if(this.linkTextShow) {
+      linkGroup.append('text')
+      .attr('dy', '-2.5')
+      .attr('text-anchor', 'middle')
+      .append('textPath')
+      .attr('xlink:href', (d: any) => `#link_id_${d.id}`)
+      .attr('startOffset', '50%')
+      .attr('class', 'link-label')
+      .attr('fill', '#a5abb6')
+      .style('font', 'normal .5em Arial')
+      .text((d: any) => d.type)
+    } else {
+      linkGroup.selectAll('text').remove()
+    }
+
     this.simulation && this.simulation.restart()
   }
 }
