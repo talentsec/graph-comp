@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React from 'react'
+import React, { useState } from 'react'
 import { getColor } from '../utils/color'
 import { ColorCategory, orderedLabel } from '../utils/constant'
 import { countLinks, countNodes } from '../utils/handleData'
@@ -9,13 +9,15 @@ import { GraphData } from './ForceDirectedGraph'
 interface IPorps {
   data: GraphData
   switchType: () => void
-  switchTextShow: () => void
+  switchTextShow: (show: boolean) => void
 }
 
 const ControlPanel: React.FC<IPorps> = ({ data, switchType, switchTextShow }) => {
   const nodes = countNodes(data.nodes)
   const links = countLinks(data.links)
   const genColor = getColor(orderedLabel)
+
+  const [textShow, setTextShow] = useState(true)
 
   return (
     <div className={styles.control_panel}>
@@ -24,7 +26,13 @@ const ControlPanel: React.FC<IPorps> = ({ data, switchType, switchTextShow }) =>
           <span className={styles.group_title}>控制面板</span>
           <div className={styles.btns}>
             <span className={styles.btn} onClick={() => { switchType() }}>切换风格</span>
-            <span className={styles.btn} onClick={() => { switchTextShow() }}>展示关系</span>
+            <span className={styles.btn} onClick={() => { 
+              setTextShow(!textShow)
+              switchTextShow(textShow) }}>
+                {
+                  textShow ? '关闭关系' : '展示关系'
+                }
+                </span>
           </div>
         </div>
 
