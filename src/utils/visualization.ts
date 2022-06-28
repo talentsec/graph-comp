@@ -2,7 +2,7 @@
 import * as d3 from 'd3'
 import { ForceLink, Simulation, SimulationNodeDatum } from 'd3'
 import { getColor } from './color'
-import { ColorCategory, orderedLabel, styleList } from './constant'
+import { ColorCategory, orderedLabel } from './constant'
 
 type GraphData = {
   nodes: any[]
@@ -176,8 +176,8 @@ export class Visualization {
 
     this.simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
       const getH = (l: string) => {
-        const h = styleList.findIndex((s) => s.label === l)
-        return h === -1 ? styleList.length * 100 + 160 : 100 * h + 40
+        const h = orderedLabel.findIndex((s) => s === l)
+        return h === -1 ? orderedLabel.length * 100 + 160 : 100 * h + 40
       }
 
       if (this.vizType === 'tree') {

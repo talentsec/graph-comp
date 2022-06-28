@@ -1,23 +1,29 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import { getColor } from '../utils/color'
 import { ColorCategory, orderedLabel } from '../utils/constant'
 import { countLinks, countNodes } from '../utils/handleData'
+import { StateContext } from './DataVisualization'
 import styles from './ControlPanel.module.css'
-import { GraphData } from './ForceDirectedGraph'
 
 interface IPorps {
-  data: GraphData
-  switchType: () => void
-  switchTextShow: (show: boolean) => void
 }
 
-const ControlPanel: React.FC<IPorps> = ({ data, switchType, switchTextShow }) => {
+const ControlPanel: React.FC<IPorps> = () => {
+  const { data, vizType, changeVizType, linkTextShow, changeLinkTextShow } = useContext(StateContext)
+
   const nodes = countNodes(data.nodes)
   const links = countLinks(data.links)
   const genColor = getColor(orderedLabel)
 
-  const [textShow, setTextShow] = useState(true)
+  
+  const switchType = () => {
+    if(vizType === 'tree') {
+      changeVizType('graph')
+    } else {
+      changeVizType('tree')
+    }
+  }
 
   return (
     <div className={styles.control_panel}>
@@ -27,12 +33,11 @@ const ControlPanel: React.FC<IPorps> = ({ data, switchType, switchTextShow }) =>
           <div className={styles.btns}>
             <span className={styles.btn} onClick={() => { switchType() }}>切换风格</span>
             <span className={styles.btn} onClick={() => { 
-              setTextShow(!textShow)
-              switchTextShow(textShow) }}>
+              changeLinkTextShow(!linkTextShow) }}>
                 {
-                  textShow ? '关闭关系' : '展示关系'
+                  linkTextShow ? '关闭关系' : '展示关系'
                 }
-                </span>
+              </span>
           </div>
         </div>
 
@@ -44,7 +49,6 @@ const ControlPanel: React.FC<IPorps> = ({ data, switchType, switchTextShow }) =>
             <div className={styles.labels}>
               {nodes.map((node, idx) => {
                 const colorCate = genColor(node.label) as ColorCategory
-                console.log('colorCate', node.label , colorCate)
                 return <span className={styles.label} id={styles['node_label']} style={ { backgroundColor: colorCate.fill, color: colorCate.text } } key={idx}>
                   {node.label} ({node.num})
                 </span>

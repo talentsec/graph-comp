@@ -1,23 +1,19 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
+import { GraphData, VizType } from '../utils/type'
 import { Visualization } from '../utils/visualization'
+import { StateContext } from './DataVisualization'
 import styles from './ForceDirectedGraph.module.css'
 
 interface IProps {
-  data: GraphData
-  vizType: VizType
-  linkTextShow: boolean
+  // data: GraphData
 }
 
-export type GraphData = {
-  nodes: any[]
-  links: any[]
-}
 
-export type VizType = 'tree' | 'graph'
-
-const ForceDirectedGraph: React.FC<IProps> = ({ data, vizType, linkTextShow }) => {
+const ForceDirectedGraph: React.FC<IProps> = () => {
   const simulation = useRef<Visualization | null>(null)
+
+  const { data, vizType, linkTextShow } = useContext(StateContext)
 
   useEffect(() => {
     if (!simulation.current) {
