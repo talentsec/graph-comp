@@ -10,13 +10,15 @@ type GraphData = {
 }
 
 export class Visualization {
+  private element: string
   private vizType: string
   private linkTextShow: boolean
   private data: GraphData
   private simulation: Simulation<SimulationNodeDatum, undefined> | null
   public status: 'init' | 'created'
 
-  constructor(data: GraphData, vizType: string, linkTextShow: boolean) {
+  constructor(element: string, data: GraphData, vizType: string, linkTextShow: boolean) {
+    this.element = element
     this.data = data
     this.vizType = vizType
     this.linkTextShow = linkTextShow
@@ -24,9 +26,15 @@ export class Visualization {
     this.status = 'init'
   }
 
+  private wrapText(text: string | undefined, threshold: number) {
+    if(!text) return ''
+    if(text.length <= threshold) return text
+    return text.substring(0, threshold).concat('...')
+  }
+
   create() {
-    const width = parseFloat(d3.select('#graph').style('width'))
-    const height = parseFloat(d3.select('#graph').style('height'))
+    const width = parseFloat(d3.select(this.element).style('width'))
+    const height = parseFloat(d3.select(this.element).style('height'))
     const { links, nodes } = this.data
     const zoom = d3
       .zoom()
@@ -42,7 +50,7 @@ export class Visualization {
       .strength(0.1)
 
     const svg = d3
-      .select('#graph')
+      .select(this.element)
       .append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -132,9 +140,8 @@ export class Visualization {
       .attr('class', 'node')
       .call(drag)
 
-
     const genColor = getColor(orderedLabel)
-    
+
     const ringElement = nodeGroup
       .append('circle')
       .attr('class', 'outline')
@@ -159,11 +166,12 @@ export class Visualization {
         return colorCate.text
       })
       .attr('font-size', '.3em')
+      .style('font-family', "'Segoe UI','Roboto','Oxygen','Ubuntu','Cantarell','Fira Sans','Droid Sans','Helvetica Neue','sans-serif'")
       .attr('opacity', 0.5)
       .attr('text-anchor', `middle`)
       .attr('dominant-baseline', 'middle')
       .text((d: any) => {
-        return d.label
+        return this.wrapText(d.properties.name, 10)
       })
 
     this.simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
@@ -234,7 +242,7 @@ export class Visualization {
       .attr('startOffset', '50%')
       .attr('class', 'link-label')
       .attr('fill', '#a5abb6')
-      .style('font', 'normal .5em Arial')
+      .style('font', 'normal .4em Arial')
       .text((d: any) => d.type)
     } else {
       linkGroup.selectAll('text').remove()
