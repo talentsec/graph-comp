@@ -4,3 +4,10 @@ export type GraphData = {
 }
 
 export type VizType = 'tree' | 'graph'
+
+export type VisualizationOption = {
+  element: string
+  data: GraphData
+  type: VizType
+  linkTextShow: boolean
+}

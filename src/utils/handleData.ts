@@ -1,3 +1,5 @@
+import { lab } from "d3"
+
 export function handleNodes(nodes: any[]) {
   const newData: any[] = []
   nodes.forEach((item) => {
@@ -92,4 +94,63 @@ export const countLinks = (links: any[]) => {
     }
   })
   return counted
+}
+
+// const recurse = ( labels: string[], nodes: any[], links: any[]) => {
+
+//   if(labels.length > 0) {
+//     findLabels(labels, nodes, links)
+//   }
+// }
+
+const findLabels = (allLabels: string[], labels: string[], nodes: any[], links: any[]) => {
+  // const curNode = nodes.find(n => n.label === label)
+  // const allLabels: string[] = []
+  const newLabels: string[] = []
+
+  labels.forEach(label => {
+    console.log('cur label', label)
+    const curNodes = nodes.filter(n => n.label === label)
+
+    curNodes.forEach(node => {
+
+      // links.forEach(link => {
+      //   if(link.target === node.id) {
+      //     const sourceNode = nodes.find(n => n.id === link.source )
+      //     // console.log('find', sourceNode)
+      //     if(!newLabels.includes(sourceNode.label)) {
+      //       newLabels.push(sourceNode.label)
+      //     }
+      //   }
+      // })
+
+      const curLinks = links.filter(link => {
+        return link.target === node.id
+      })
+
+      const curSourceIds = curLinks.map(cl => cl.source)
+      const curLabels: string[] = []
+      const curSources = nodes.filter(n => curSourceIds.includes(n.id))
+      curSources.forEach(cs => {
+        if(!curLabels.includes(cs.label)) {
+          curLabels.push(cs.label)
+        }
+      })
+    
+      console.log('cuirLiks', node, curSourceIds, curLabels)
+
+      // if(curLabels.length > 0) {
+      //   findLabels(allLabels, curLabels, nodes, links)
+      // }
+    })
+  })
+}
+
+export const testNodes = (nodes: any[], links: any[]) => {
+  const foundLabels: string[] = []
+  let rootLabels = ['Subdomain']
+
+  findLabels(foundLabels, rootLabels, nodes, links)
+
+  // console.log(4444, testNodes)
 }

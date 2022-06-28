@@ -17,7 +17,7 @@ const ForceDirectedGraph: React.FC<IProps> = () => {
 
   useEffect(() => {
     if (!simulation.current) {
-      simulation.current = new Visualization('#graph', data, vizType, linkTextShow)
+      simulation.current = new Visualization({ element: '#graph', data: data, type: vizType, linkTextShow: linkTextShow })
     }
     if (simulation.current.status === 'created') {
       simulation.current.restart(vizType, linkTextShow)

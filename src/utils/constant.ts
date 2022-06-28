@@ -1,15 +1,3 @@
-// export const styleList = [
-//   { label: 'Seed', fill: '#ecb5c9', outline: '#da7298', text: '#2a2c34' },
-//   { label: 'SowedSeed', fill: '#ffc454', outline: '#d7a013', text: '#2a2c34' },
-//   { label: 'IP', fill: '#4c8eda', outline: '#2870c2', text: '#ffffff' },
-//   { label: 'OS', fill: '#f79767', outline: '#f36924', text: '#ffffff' },
-//   { label: 'PORT', fill: '#c990c0', outline: '#b261a5', text: '#ffffff' },
-//   { label: 'SERVICE', fill: '#57c7e3', outline: '#35b9da', text: '#2a2c34' },
-//   { label: 'PRODUCT', fill: '#d9c8ae', outline: '#c3a77e', text: '#2a2c34' },
-//   { label: 'ASN', fill: '#569480', outline: '#497a6b', text: '#ffffff' },
-//   { label: '*', fill: '#a5abb6', outline: '#a4aab4', text: '#ffffff' }
-// ]
-
 export type ColorCategory = {
   fill: string
   outline: string

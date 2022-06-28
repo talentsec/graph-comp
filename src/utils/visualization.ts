@@ -1,13 +1,9 @@
 /* eslint-disable no-unused-vars */
 import * as d3 from 'd3'
-import { ForceLink, Simulation, SimulationNodeDatum } from 'd3'
+import { ForceLink, json, Simulation, SimulationNodeDatum } from 'd3'
 import { getColor } from './color'
 import { ColorCategory, orderedLabel } from './constant'
-
-type GraphData = {
-  nodes: any[]
-  links: any[]
-}
+import { GraphData, VisualizationOption } from './type'
 
 export class Visualization {
   private element: string
@@ -17,17 +13,18 @@ export class Visualization {
   private simulation: Simulation<SimulationNodeDatum, undefined> | null
   public status: 'init' | 'created'
 
-  constructor(element: string, data: GraphData, vizType: string, linkTextShow: boolean) {
-    this.element = element
-    this.data = data
-    this.vizType = vizType
-    this.linkTextShow = linkTextShow
+  constructor(option: VisualizationOption) {
+    this.element = option.element
+    this.data = option.data
+    this.vizType = option.type
+    this.linkTextShow = option.linkTextShow
     this.simulation = null
     this.status = 'init'
   }
 
   private wrapText(text: string | undefined, threshold: number) {
     if(!text) return ''
+    if(typeof text !== 'string') text = JSON.stringify(text)
     if(text.length <= threshold) return text
     return text.substring(0, threshold).concat('...')
   }
@@ -171,7 +168,7 @@ export class Visualization {
       .attr('text-anchor', `middle`)
       .attr('dominant-baseline', 'middle')
       .text((d: any) => {
-        return this.wrapText(d.properties.name, 10)
+        return this.wrapText(d.properties.val, 12)
       })
 
     this.simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {

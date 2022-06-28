@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { createContext, useState } from 'react'
-import { handleLinks, handleNodes } from '../utils/handleData'
+import { handleLinks, handleNodes, testNodes } from '../utils/handleData'
 import ForceDirectedGraph from './ForceDirectedGraph'
 import styles from './DataVisualization.module.css'
 import ControlPanel from './ControlPanel'
@@ -25,6 +25,8 @@ const DataVisualization: React.FC<IProps> = ({ data }) => {
   const links = handleLinks(data.links, nodes)
   const [vizType, setVizType] = useState<VizType>('tree')
   const [linkTextShow, setLinkTextShow] = useState<boolean>(false)
+
+  console.log('order nodes', testNodes(nodes, links))
 
   return (
     <StateContext.Provider value={ { data: { nodes, links }, vizType, changeVizType: setVizType, linkTextShow, changeLinkTextShow: setLinkTextShow }}>
